@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+import os
 
 # Set plot styles
 sns.set_style('whitegrid')
@@ -13,24 +14,25 @@ st.title("Rush Soccer Club Membership Analysis")
 
 st.markdown("""
 This report provides an analysis of how membership per club has changed from Fall 2023 to Fall 2024.
-Upload the membership data files to get started.
 """)
 
 # -----------------------------------------
-# File Upload Section
+# Data Loading Section
 # -----------------------------------------
 
-st.header("Upload Membership Data Files")
+st.header("Data Loading")
 
-fall_23_file = st.file_uploader("Upload Membership_Numbers_Fees_Fall_23.csv", type="csv", key="fall_23")
-spring_24_file = st.file_uploader("Upload Membership_Numbers_Fees_Spring_24.csv", type="csv", key="spring_24")
-fall_24_file = st.file_uploader("Upload Membership_Numbers_Fees_Fall_24.csv", type="csv", key="fall_24")
+# Define the filenames
+fall_23_filename = 'Membership_Numbers_Fees_Fall_23.csv'
+spring_24_filename = 'Membership_Numbers_Fees_Spring_24.csv'
+fall_24_filename = 'Membership_Numbers_Fees_Fall_24.csv'
 
-if fall_23_file is not None and spring_24_file is not None and fall_24_file is not None:
+# Check if files exist in the current directory
+if os.path.exists(fall_23_filename) and os.path.exists(spring_24_filename) and os.path.exists(fall_24_filename):
     # Read the CSV files
-    df_fall_23 = pd.read_csv(fall_23_file)
-    df_spring_24 = pd.read_csv(spring_24_file)
-    df_fall_24 = pd.read_csv(fall_24_file)
+    df_fall_23 = pd.read_csv(fall_23_filename)
+    df_spring_24 = pd.read_csv(spring_24_filename)
+    df_fall_24 = pd.read_csv(fall_24_filename)
 
     # -----------------------------------------
     # Data Preparation
@@ -141,10 +143,10 @@ if fall_23_file is not None and spring_24_file is not None and fall_24_file is n
     clubs_missing_f24 = df_comp[df_comp['F24 Total #'] == 0]
 
     if not clubs_missing_f24.empty:
-        st.write("The following clubs have not uploaded their membership numbers for Fall 2024:")
+        st.write("The following clubs have not provided their membership numbers for Fall 2024:")
         st.write(clubs_missing_f24['Club'])
     else:
-        st.write("All clubs have uploaded their membership numbers for Fall 2024.")
+        st.write("All clubs have provided their membership numbers for Fall 2024.")
 
     # -----------------------------------------
     # Visualizations
@@ -476,7 +478,7 @@ if fall_23_file is not None and spring_24_file is not None and fall_24_file is n
         ax_declining_clubs.set_ylabel('Club')
         st.pyplot(fig_declining_clubs)
 
-        # Print clubs with most decline
+        # Print clubs with decline
         st.write("Clubs with Decline:")
         declined_clubs = declining_clubs[['Club', 'F23 Total #', 'F24 Total #', 'Total Growth F23 to F24']].sort_values(by='Total Growth F23 to F24')
         st.write(declined_clubs)
@@ -490,4 +492,4 @@ if fall_23_file is not None and spring_24_file is not None and fall_24_file is n
     st.write("This concludes the enhanced membership analysis report for Rush Soccer Clubs.")
 
 else:
-    st.warning("Please upload all three CSV files to proceed with the analysis.")
+    st.error("Data files not found. Please ensure that the CSV files are present in the application's directory.")
